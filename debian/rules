@@ -1,0 +1,158 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+
+
+
+CFLAGS = -Wall -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	# Add here commands to configure the package.
+
+	touch configure-stamp
+
+
+build: build-stamp
+
+build-stamp: configure-stamp 
+	dh_testdir
+
+	# Add here commands to compile the package.
+	$(MAKE)
+	#docbook-to-man debian/greensql-fw.sgml > greensql-fw.1
+
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+
+	# Add here commands to clean up after the build process.
+	[ ! -f Makefile ] || $(MAKE) clean
+
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+
+
+# Add here commands to install the package into debian/greensql-fw.
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/greensql-fw
+	${MAKE} install-web DESTDIR=$(CURDIR)/debian/greensql-fw
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+
+## check to see whether debian/control exists
+	dh_testdir
+
+## make sure we are root or have root privileges
+	dh_testroot
+
+## install "changelog" to over there /usr/share/doc/package/
+	dh_installchangelogs 
+
+## install what is written in "debian/docs" to over there: /usr/share/doc/package/
+	dh_installdocs
+
+## no example files
+#	dh_installexamples
+
+## more generic for copying any sort of files
+#	dh_install
+
+## we have our own files that do post processing after the shell dialog menu
+#	dh_installmenu
+
+## some files that were used in the debconf process from debian/
+	dh_installdebconf	
+
+## logrotate scripts
+	dh_installlogrotate -a
+
+## emacs addon package
+#	dh_installemacsen
+
+## installing files into /etc/pam.d/ for pam manipulation
+#	dh_installpam
+
+## installing mime/media files from debian/ to /usr/share/mime/packages/
+#	dh_installmime
+
+## installs package.init from debian/ to /etc/init.d/package and sets up the symlinks in /etc/rc*.d/
+	dh_installinit
+
+## installing debian/package.cron.* files from debian/ to /etc/cron.*/
+#	dh_installcron
+
+## info files - debian/package.info lists other files to be installed
+#	dh_installinfo
+
+## the file debian/package.manpages lists other man pages to be installed.
+## installs to /usr/share/man/*/ with accoradance to the .TH line in the manpages
+	dh_installman
+
+## creates symlinks with accordance to as written in: debian/package.links
+	dh_link
+
+## automatically strips all the debugging symbols from binaries and shared libraries
+	dh_strip
+
+## automatically compresses files that should be gzip'd, like manpages and info files
+	dh_compress
+
+## fixes permissions: all files are owned by root and with read and/or execute
+	dh_fixperms
+
+## looks up perl dependencies within perl files if those exist
+#	dh_perl
+
+## looks up python dependencies within perl files if those exist
+#	dh_python
+
+## make shared libraries dependencies list shlibs
+#	dh_makeshlibs
+
+## installs post/pre scripts, etc from debian/ to debian/package/DEBIAN dir in developer working directory
+	dh_installdeb
+
+## automatically calculates the dependencies libraries and passes it as a parameter to the "control" file in debian/
+	dh_shlibdeps --exclude=.so
+
+## installs the control file into the debian/package/DEBIAN dir
+	dh_gencontrol
+
+## creates a md5 file that sums up all the files that were copied and their md5 checksum in debian/package/DEBIAN/
+	dh_md5sums
+
+###############################
+## make the actual .deb file ##
+	dh_builddeb
+###############################
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

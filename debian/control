@@ -1,0 +1,14 @@
+Source: greensql-fw
+Section: misc
+Priority: optional
+Maintainer: Eli Shemer <eli.shemer@greensql.com>
+Uploaders: Yuli Stremovsky <stremovsky@gmail.com>
+Build-Depends: debhelper (>= 4.0.0), flex, bison, libevent-dev, libpcre3-dev, libmysqlclient-dev, libpq-dev
+Standards-Version: 3.8.0
+
+Package: greensql-fw
+Architecture: any
+Pre-Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: libmysqlclient15off, libpq5
+Description: Open Source Database Firewall.
+ Open Source Database firewall.
